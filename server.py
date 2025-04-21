@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from EmotionDetection.emotion_detection import emotion_detection  # Make sure this import works
 
 app = Flask(__name__)
@@ -13,10 +13,17 @@ def detect_emotion():
         return "Please provide text using the 'textToAnalyze' query parameter.", 400
 
     # Run the emotion detection
-    result = emotion_detection(text_to_analyze)
+    response = emotion_detection(text_to_analyze)
 
     # Return the result as a string
-    return f"The detected dominant emotion is: {result['dominant_emotion']}"
+    string_res = "".join([f"{k}: {v}, " for k,v in response.items() if k!= "dominant_emotion"])
+    result = f"For the given statement, the system response is {string_res}"
+    return result
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=5000, debug=True)
+
